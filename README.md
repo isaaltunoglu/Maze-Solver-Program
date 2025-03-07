@@ -1,29 +1,29 @@
 # Maze Solver Program (README)
 
-## Genel Açıklama
-Bu program, 5x5 boyutunda bir labirent haritası üzerinde bir yol bulma algoritması uygular. Program, başlangıç noktasından (0,0) hedef noktasına (4,4) ulaşmaya çalışır. Geçilebilir yollar `1`, engeller `0` ile temsil edilir. Eğer hedefe ulaşılırsa, izlenen yol kaydedilir ve ekrana yazdırılır.
+## General Description
+This program implements a pathfinding algorithm on a 5x5 maze grid. The program attempts to navigate from the starting point (0,0) to the target point (4,4). Passable paths are represented by `1`, while obstacles are represented by `0`. If a path to the goal is found, the traveled path is recorded and displayed.
 
-## Programın Çalışma Mantığı
-1. `map` değişkeni labirentin mevcut durumunu saklar. `1` değerleri geçilebilir yolları, `0` değerleri engelleri ifade eder.
-2. `savedmap`, çözülen yolu ve ziyaret edilen noktaları gösterir.
-3. `isValid(x, y)` fonksiyonu, verilen koordinatların harita sınırları içinde olup olmadığını kontrol eder.
-4. `pathfind(x, y)` fonksiyonu, derinlik öncelikli arama (DFS) algoritmasıyla yolu bulmaya çalışır:
-   - Eğer hedefe ulaşılırsa (`x == 4 && y == 4`), çözüm tamamlanmış kabul edilir.
-   - Geçerli bir hücrede bulunuluyorsa, hücre ziyaret edilmiş olarak işaretlenir.
-   - Dört farklı yönde (`sağ, aşağı, sol, yukarı`) hareket edilerek yol aranır.
-   - Eğer bir yol bulunamazsa, hücre eski haline getirilir ve geri dönülür.
+## Program Logic
+1. The `map` variable stores the current state of the maze. `1` represents passable paths, and `0` represents obstacles.
+2. The `savedmap` variable records the solved path and visited points.
+3. The `isValid(x, y)` function checks whether the given coordinates are within the boundaries of the grid.
+4. The `pathfind(x, y)` function implements a Depth-First Search (DFS) algorithm to find a valid path:
+   - If the target `(4,4)` is reached, the solution is considered complete.
+   - If the current cell is valid and passable, it is marked as visited.
+   - The algorithm explores four possible directions (`right, down, left, up`) to find a path.
+   - If no valid path is found, the function backtracks and resets the cell.
 
-## Kod Açıklamaları
+## Code Explanation
 
-### isValid Fonksiyonu
+### isValid Function
 ```c
 int isValid(int x, int y){
     return (x >= 0 && x < 5 && y >= 0 && y < 5);
 }
 ```
-Bu fonksiyon, verilen `(x, y)` koordinatlarının harita sınırları içinde olup olmadığını kontrol eder. Eğer koordinatlar 5x5 harita sınırları dışına çıkarsa `false (0)`, aksi halde `true (1)` döndürülür.
+This function checks whether the given `(x, y)` coordinates are within the boundaries of the 5x5 grid. If they are outside the valid range, it returns `false (0)`, otherwise `true (1)`.
 
-### pathfind Fonksiyonu
+### pathfind Function
 ```c
 int pathfind(int x,int y){
     if (x == 4 && y == 4) {
@@ -36,11 +36,11 @@ int pathfind(int x,int y){
     map[y][x] = 0;
     savedmap[y][x] = 2;
 ```
-- `(4,4)` noktasına ulaşıldığında çözüm bulunmuş demektir ve program tamamlanır.
-- Eğer mevcut hücre geçersiz (`isValid == 0`) veya bir engelse (`map[y][x] == 0`), fonksiyon çalışmayı durdurur.
-- Mevcut hücre `0` olarak işaretlenir ve `savedmap` içerisine `2` kaydedilir (bu hücrenin geçildiğini gösterir).
+- If `(4,4)` is reached, the solution is found, and the program stops.
+- If the current cell is invalid (`isValid == 0`) or an obstacle (`map[y][x] == 0`), the function terminates.
+- The current cell is marked as `0`, and `savedmap` is updated to `2` (indicating the path traveled).
 
-#### Hareket Kuralları
+#### Movement Rules
 ```c
     if(isValid(x, y+1) && map[y+1][x] == 1){
         sumpath += 1;
@@ -48,19 +48,19 @@ int pathfind(int x,int y){
         sumpath -= 1;
     }
 ```
-- `isValid(x, y+1)`, bir adım aşağı hareketin mümkün olup olmadığını kontrol eder.
-- `map[y+1][x] == 1`, gidilecek hücrenin geçilebilir olup olmadığını inceler.
-- Benzer şekilde `isValid(x+1, y)`, `isValid(x-1, y)`, `isValid(y-1, x)` ile sağa, sola ve yukarıya hareketler kontrol edilir.
-- Hareket edilebiliyorsa `sumpath` artırılır, geri dönüş olursa azaltılır.
+- `isValid(x, y+1)` checks if moving down is possible.
+- `map[y+1][x] == 1` ensures that the destination cell is passable.
+- Similar conditions apply to moving right (`isValid(x+1, y)`), left (`isValid(x-1, y)`), and up (`isValid(y-1, x)`).
+- If a move is made, `sumpath` is incremented; if backtracking occurs, it is decremented.
 
-## savedmap Kullanımı
-Kod çalıştırıldığında, `savedmap` matrisi çözülen yolu saklar:
-- `2`: Geçilen hücreler
-- `-1`: Geri dönülen hücreler
-- `1`: Orijinal geçilebilir hücreler
-- `0`: Engeller
+## savedmap Usage
+When executed, the `savedmap` matrix stores the solved path:
+- `2`: Cells that are part of the solution path
+- `-1`: Backtracked cells
+- `1`: Original passable cells
+- `0`: Obstacles
 
-Örneğin, bir çözüm sonrası şu şekilde bir çıktı alınabilir:
+For example, after solving the maze, the output might look like this:
 ```
 2   0   2   2   2   
 2   2   2   0   2   
@@ -69,8 +69,8 @@ Kod çalıştırıldığında, `savedmap` matrisi çözülen yolu saklar:
 0   0   0   0   2   
 ```
 
-## Yeni Haritalar Eklemek
-Eğer farklı bir harita eklemek isterseniz, aşağıdaki `map` ve `savedmap` matrislerini değiştirerek yeni labirentler oluşturabilirsiniz:
+## Adding New Mazes
+To test different mazes, modify the `map` and `savedmap` matrices accordingly:
 
 ```c
 int map[5][5] ={{1,1,1,1,1},
@@ -79,13 +79,13 @@ int map[5][5] ={{1,1,1,1,1},
                 {1,0,0,0,1},
                 {1,1,1,1,1}};
 ```
-Bu, farklı bir yol bulma senaryosu oluşturacaktır.
+This will create a different maze scenario with unique pathfinding challenges.
 
-## Çalıştırma
-Programı bir C derleyicisi ile çalıştırabilirsiniz:
+## Running the Program
+Compile and run the program using a C compiler:
 ```sh
 gcc maze_solver.c -o maze_solver
 ./maze_solver
 ```
-Eğer hedefe ulaşılabiliyorsa, çözüm yolu yazdırılacaktır. Aksi halde "There is no path" mesajı görüntülenir.
+If a path to the target is found, the solution will be displayed. Otherwise, the message "There is no path" will appear.
 
